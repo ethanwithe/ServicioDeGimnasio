@@ -1,0 +1,81 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            # Servicio Usuario
+            - id: servicio-usuario
+              uri: lb://SERVICIO-USUARIO
+              predicates:
+                - Path=/users/**
+              filters:
+                - RewritePath=/users/(?<segment>.*), /api/users/${segment}
+
+            # Servicio RRHH
+            - id: servicio-rrhh
+              uri: lb://SERVICIO-RRHH
+              predicates:
+                - Path=/rrhh/**
+              filters:
+                - RewritePath=/rrhh/(?<segment>.*), /api/rrhh/${segment}
+
+            # Servicio Inventario
+            - id: servicio-inventario
+              uri: lb://SERVICIO-INVENTARIO
+              predicates:
+                - Path=/inventario/**
+              filters:
+                - RewritePath=/inventario/(?<segment>.*), /api/inventario/${segment}
+
+            # Servicio Customer
+            - id: servicio-customer
+              uri: lb://SERVICIO-CUSTOMER
+              predicates:
+                - Path=/clientes/**
+              filters:
+                - RewritePath=/clientes/(?<segment>.*), /api/clientes/${segment}
+
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:3001"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - PATCH
+                  - OPTIONS
+                allowedHeaders: "*"
+                allowCredentials: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
