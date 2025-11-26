@@ -9,7 +9,11 @@ DELETE FROM productos WHERE nombre IN (
     'Creatina Monohidratada',
     'Aminoácidos BCAA',
     'Pre-Workout',
+    'Proteína Vegana',
+    'Glutamina',
     'Barras Proteicas (caja 12)',
+    'Galletas Proteicas',
+    'Chips Proteicos',
     'Shaker Deportivo',
     'Guantes de Entrenamiento',
     'Toalla Deportiva',
@@ -19,7 +23,12 @@ DELETE FROM productos WHERE nombre IN (
     'Rodilleras',
     'Muñequeras',
     'Banda Elástica',
-    'Colchoneta Yoga'
+    'Colchoneta Yoga',
+    'Camiseta Gimnasio',
+    'Short Deportivo',
+    'Leggings Mujer',
+    'Top Deportivo'
+    
 );
 
 -- Insertar productos
@@ -60,8 +69,12 @@ INSERT INTO productos (nombre, categoria, precio, stock, estado, stock_minimo, v
 -- Eliminar datos existentes
 DELETE FROM maquinas WHERE nombre IN (
     'Cinta de Correr Pro X1',
+    'Cinta de Correr Pro X2',
+    'Cinta de Correr Pro X3',
     'Bicicleta Estática Elite',
+    'Bicicleta Estática Elite 2',
     'Elíptica Cross Trainer',
+    'Elíptica Cross Trainer 2',
     'Press de Pecho',
     'Leg Press 45°',
     'Máquina Smith',
@@ -73,7 +86,8 @@ DELETE FROM maquinas WHERE nombre IN (
     'Extensión de Piernas',
     'Curl de Piernas',
     'Máquina de Remo',
-    'Bicicleta de Spinning'
+    'Bicicleta de Spinning',
+    'Rack Funcional'
 );
 
 -- Insertar máquinas
