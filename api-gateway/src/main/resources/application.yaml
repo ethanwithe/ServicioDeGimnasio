@@ -15,33 +15,33 @@ spring:
             - id: servicio-usuario
               uri: lb://SERVICIO-USUARIO
               predicates:
-                - Path=/users/**
+                - Path=/api/users/**
               filters:
-                - RewritePath=/users/(?<segment>.*), /api/users/${segment}
+                - RewritePath=/api/users/(?<segment>.*), /api/users/${segment}
 
             # Servicio RRHH
             - id: servicio-rrhh
               uri: lb://SERVICIO-RRHH
               predicates:
-                - Path=/rrhh/**
+                - Path=/api/rrhh/**
               filters:
-                - RewritePath=/rrhh/(?<segment>.*), /api/rrhh/${segment}
+                - RewritePath=/api/rrhh/(?<segment>.*), /api/rrhh/${segment}
 
             # Servicio Inventario
             - id: servicio-inventario
               uri: lb://SERVICIO-INVENTARIO
               predicates:
-                - Path=/inventario/**
+                - Path=/api/inventario/**
               filters:
-                - RewritePath=/inventario/(?<segment>.*), /api/inventario/${segment}
+                - RewritePath=/api/inventario/(?<segment>.*), /api/inventario/${segment}
 
             # Servicio Customer
             - id: servicio-customer
               uri: lb://SERVICIO-CUSTOMER
               predicates:
-                - Path=/clientes/**
+                - Path=/api/clientes/**
               filters:
-                - RewritePath=/clientes/(?<segment>.*), /api/clientes/${segment}
+                - RewritePath=/api/clientes/(?<segment>.*), /api/clientes/${segment}
 
           globalcors:
             cors-configurations:

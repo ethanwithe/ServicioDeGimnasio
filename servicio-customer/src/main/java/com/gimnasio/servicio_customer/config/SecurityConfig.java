@@ -1,4 +1,4 @@
-package com.gimnasio.servicio_inventario.config;
+package com.gimnasio.servicio_customer.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

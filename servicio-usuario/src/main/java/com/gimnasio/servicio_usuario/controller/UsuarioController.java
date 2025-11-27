@@ -55,7 +55,14 @@ public class UsuarioController {
         UsuarioDTO nuevoUsuario = usuarioService.crearUsuario(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
     }
-
+    /**
+     * Obtener usuarios
+     */
+    @GetMapping
+    public ResponseEntity<List<UsuarioDTO>> obtenerTodosLosClientes() {
+        List<UsuarioDTO> clientes = usuarioService.obtenerTodosLosUsuarios();
+        return ResponseEntity.ok(clientes);
+    }
     /**
      * Obtener usuario por ID
      */
