@@ -39,11 +39,15 @@ export default function Clientes() {
         clienteService.obtenerTopClientes(5)
       ]);
 
-      setClientes(clientesData);
-      setClientesFiltrados(clientesData);
-      setEstadisticas(estadisticasData);
-      setCrecimiento(crecimientoData);
-      setTopClientes(topClientesData);
+      setClientes(clientesData.data || []);
+      setClientesFiltrados(clientesData.data || []);
+      setEstadisticas(estadisticasData.data || {});
+      setCrecimiento(Array.isArray(crecimientoData.data) ? crecimientoData.data : []);
+      setTopClientes(Array.isArray(topClientesData.data) ? topClientesData.data : []);
+      
+      // Debug: Ver qué datos llegan
+      console.log('Estadísticas completas:', estadisticasData.data);
+      console.log('Distribución de membresías:', estadisticasData.data?.distribucionMembresias);
     } catch (err) {
       console.error('Error al cargar datos:', err);
       setError('No se pudieron cargar los clientes. Verifique la conexión con el servidor.');
@@ -70,6 +74,27 @@ export default function Clientes() {
   };
 
   const membresias = ['Todas', ...new Set(clientes.map(c => c.membresia))];
+
+  // Obtener datos de distribución de membresías de forma segura
+  const distribucionMembresias = Array.isArray(estadisticas?.distribucionMembresias) 
+    ? estadisticas.distribucionMembresias 
+    : calcularDistribucionMembresias();
+
+  // Función para calcular distribución si el backend no la provee
+  function calcularDistribucionMembresias() {
+    if (clientes.length === 0) return [];
+    
+    const conteo = {};
+    clientes.forEach(cliente => {
+      const membresia = cliente.membresia || 'Sin membresía';
+      conteo[membresia] = (conteo[membresia] || 0) + 1;
+    });
+    
+    return Object.entries(conteo).map(([tipo, cantidad]) => ({
+      tipo,
+      cantidad
+    }));
+  }
 
   if (loading) {
     return (
@@ -164,17 +189,23 @@ export default function Clientes() {
             <CardDescription>Nuevos clientes vs. bajas mensuales</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={crecimiento}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="nuevos" stroke="#10b981" strokeWidth={2} name="Nuevos" />
-                <Line type="monotone" dataKey="bajas" stroke="#ef4444" strokeWidth={2} name="Bajas" />
-              </LineChart>
-            </ResponsiveContainer>
+            {crecimiento.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={crecimiento}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="nuevos" stroke="#10b981" strokeWidth={2} name="Nuevos" />
+                  <Line type="monotone" dataKey="bajas" stroke="#ef4444" strokeWidth={2} name="Bajas" />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                No hay datos de crecimiento disponibles
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -187,15 +218,21 @@ export default function Clientes() {
             <CardDescription>Por tipo de plan</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={estadisticas?.distribucionMembresias || []}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="tipo" angle={-45} textAnchor="end" height={100} />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="cantidad" fill="#8b5cf6" name="Clientes" />
-              </BarChart>
-            </ResponsiveContainer>
+            {distribucionMembresias.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={distribucionMembresias}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="tipo" angle={-45} textAnchor="end" height={100} />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="cantidad" fill="#8b5cf6" name="Clientes" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                No hay datos de distribución disponibles
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -297,20 +334,24 @@ export default function Clientes() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {topClientes.map((cliente, index) => (
-                <div key={cliente.id} className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center font-bold">
-                      {index + 1}
+              {topClientes.length > 0 ? (
+                topClientes.map((cliente, index) => (
+                  <div key={cliente.id} className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center font-bold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">{cliente.nombre}</p>
+                        <p className="text-sm text-gray-600">{cliente.membresia}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-gray-800">{cliente.nombre}</p>
-                      <p className="text-sm text-gray-600">{cliente.membresia}</p>
-                    </div>
+                    <span className="font-bold text-yellow-600">{cliente.visitas} visitas</span>
                   </div>
-                  <span className="font-bold text-yellow-600">{cliente.visitas} visitas</span>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-center text-gray-500 py-4">No hay datos disponibles</p>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -1,11 +1,35 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx';
-import { Badge } from '@/components/ui/badge.jsx';
-import { Button } from '@/components/ui/button.jsx';
-import { Tag, Clock, MapPin, Phone, Mail, Calendar, Dumbbell, Users, Award } from 'lucide-react';
-import gymLuxury from '../assets/gym-luxury.jpg';
-import gymModern from '../assets/gym-modern.jpg';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Tag, Clock, MapPin, Phone, Mail, Dumbbell, AlertCircle, Award
+} from 'lucide-react';
+
+import gymLuxury from '../assets/hero.png';
+import { clienteService } from "../services/clienteService";
 
 export default function ClienteDashboard({ activeSection }) {
+  // ---------- ESTADOS ----------
+  const [clientes, setClientes] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+    // ---------- CARGA INICIAL ----------
+  useEffect(() => {
+    const cargarClientes = async () => {
+      try {
+        const response = await clienteService.obtenerTodosLosClientes();
+        setClientes(response.data);
+      } catch (err) {
+        console.error("Error cargando clientes:", err);
+        setError("No se pudo cargar la información. Verifique la conexión.");
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarClientes();
+  }, []);
   const ofertas = [
     {
       id: 1,
@@ -65,6 +89,36 @@ export default function ClienteDashboard({ activeSection }) {
     { nombre: 'Nutrición', icono: '🥗', descripcion: 'Asesoría nutricional' },
   ];
 
+    // ---------- LOADER ----------
+  if (cargando && activeSection === "clientes") {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-xl font-semibold text-gray-700">Cargando información...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- ERROR ----------
+  if (error && activeSection === "clientes") {
+    return (
+      <div className="p-6">
+        <Card className="border-l-4 border-red-500 shadow-lg">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <AlertCircle className="w-8 h-8 text-red-500 flex-shrink-0" />
+              <div>
+                <p className="font-bold text-lg text-red-800">Error al cargar datos</p>
+                <p className="text-red-600 mt-1">{error}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   if (activeSection === 'ofertas') {
     return (
       <div className="space-y-6">
@@ -242,6 +296,78 @@ export default function ClienteDashboard({ activeSection }) {
       </div>
     );
   }
+// ========== SECCIÓN 3: CLIENTES ==========
+  if (activeSection === "clientes") {
+    return (
+      <div className="space-y-6">
+        <Card className="shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-3xl">Clientes Registrados</CardTitle>
+            <CardDescription className="text-lg mt-2">
+              Información obtenida desde el microservicio • Total: <span className="font-bold text-blue-600">{clientes.length}</span> clientes
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            {clientes.length === 0 ? (
+              <div className="text-center py-16">
+                <AlertCircle className="w-20 h-20 text-gray-400 mx-auto mb-4" />
+                <p className="text-xl text-gray-500 font-semibold">No hay clientes registrados</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-300 bg-gradient-to-r from-blue-50 to-purple-50">
+                      <th className="text-left p-4 font-bold text-gray-800 text-lg">ID</th>
+                      <th className="text-left p-4 font-bold text-gray-800 text-lg">Nombre Completo</th>
+                      <th className="text-left p-4 font-bold text-gray-800 text-lg">Email</th>
+                      <th className="text-left p-4 font-bold text-gray-800 text-lg">Teléfono</th>
+                      <th className="text-left p-4 font-bold text-gray-800 text-lg">Membresía</th>
+                      <th className="text-left p-4 font-bold text-gray-800 text-lg">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clientes.map((c) => (
+                      <tr 
+                        key={c.id} 
+                        className="border-b hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all"
+                      >
+                        <td className="p-4 font-bold text-gray-700">{c.id}</td>
+                        <td className="p-4">
+                          <span className="font-bold text-lg text-gray-800">
+                            {c.nombre} {c.apellido}
+                          </span>
+                        </td>
+                        <td className="p-4 text-gray-600 text-base">{c.email}</td>
+                        <td className="p-4 text-gray-600 text-base">{c.telefono || 'N/A'}</td>
+                        <td className="p-4">
+                          <Badge 
+                            variant={c.tipoMembresia === 'Premium' ? 'default' : 'secondary'}
+                            className="text-base font-semibold px-3 py-1"
+                          >
+                            {c.tipoMembresia || 'Sin membresía'}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <Badge 
+                            variant={c.activo ? 'default' : 'destructive'}
+                            className="text-base font-semibold px-3 py-1"
+                          >
+                            {c.activo ? 'Activo' : 'Inactivo'}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -257,4 +383,3 @@ export default function ClienteDashboard({ activeSection }) {
     </div>
   );
 }
-

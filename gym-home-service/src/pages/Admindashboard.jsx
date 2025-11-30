@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.jsx';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Package, TrendingUp, DollarSign, ShoppingCart } from 'lucide-react';
 
 export default function AdminDashboard({ activeSection }) {
@@ -29,6 +29,20 @@ export default function AdminDashboard({ activeSection }) {
     { nombre: 'Suplementos', valor: 8455.50, porcentaje: 67 },
     { nombre: 'Accesorios', valor: 2115.00, porcentaje: 17 },
     { nombre: 'Ropa Deportiva', valor: 2030.00, porcentaje: 16 },
+  ];
+
+  // Datos de ventas mensuales (igual que en Gerente)
+  const ventasMensuales = [
+    { mes: 'Ene', ventas: 28500, compras: 15200, ganancia: 13300 },
+    { mes: 'Feb', ventas: 32100, compras: 16800, ganancia: 15300 },
+    { mes: 'Mar', ventas: 29800, compras: 14900, ganancia: 14900 },
+    { mes: 'Abr', ventas: 35600, compras: 18200, ganancia: 17400 },
+    { mes: 'May', ventas: 38900, compras: 19500, ganancia: 19400 },
+    { mes: 'Jun', ventas: 42300, compras: 21000, ganancia: 21300 },
+    { mes: 'Jul', ventas: 45800, compras: 22400, ganancia: 23400 },
+    { mes: 'Ago', ventas: 48200, compras: 23800, ganancia: 24400 },
+    { mes: 'Sep', ventas: 51500, compras: 25200, ganancia: 26300 },
+    { mes: 'Oct', ventas: 54200, compras: 26500, ganancia: 27700 },
   ];
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -178,16 +192,61 @@ export default function AdminDashboard({ activeSection }) {
   if (activeSection === 'ventas') {
     return (
       <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+            <CardHeader>
+              <CardTitle>Ventas del Mes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">S/ 245,000</div>
+              <p className="text-sm text-blue-100 mt-2">+23% vs. mes anterior</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+            <CardHeader>
+              <CardTitle>Utilidad Neta</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">S/ 90,000</div>
+              <p className="text-sm text-green-100 mt-2">Margen: 36.7%</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+            <CardHeader>
+              <CardTitle>ROI Anual</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">42%</div>
+              <p className="text-sm text-purple-100 mt-2">Retorno de inversión</p>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card>
           <CardHeader>
-            <CardTitle>Reporte de Ventas</CardTitle>
-            <CardDescription>Vista detallada de ventas de productos</CardDescription>
+            <CardTitle>Rendimiento Financiero Anual</CardTitle>
+            <CardDescription>Análisis de ingresos, gastos y utilidad</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8">
-              <Package className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-600">Consulte la sección de Productos para ver el detalle de ventas</p>
-            </div>
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={ventasMensuales.map(v => ({ 
+                mes: v.mes, 
+                ingresos: v.ventas, 
+                gastos: v.compras, 
+                utilidad: v.ganancia 
+              }))}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mes" />
+                <YAxis />
+                <Tooltip formatter={(value) => `S/ ${value.toLocaleString()}`} />
+                <Legend />
+                <Line type="monotone" dataKey="ingresos" stroke="#10b981" strokeWidth={3} name="Ingresos" />
+                <Line type="monotone" dataKey="gastos" stroke="#ef4444" strokeWidth={3} name="Gastos" />
+                <Line type="monotone" dataKey="utilidad" stroke="#3b82f6" strokeWidth={3} name="Utilidad" />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
@@ -257,4 +316,3 @@ export default function AdminDashboard({ activeSection }) {
     </div>
   );
 }
-

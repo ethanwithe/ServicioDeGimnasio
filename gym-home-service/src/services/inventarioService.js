@@ -1,295 +1,102 @@
 import api from './api';
 
-const INVENTARIO_API = '/api/inventario';
-
 export const inventarioService = {
-  
-  // ============ PRODUCTOS ============
-  
-  /**
-   * Obtener todos los productos
-   */
+  // PRODUCTOS
   obtenerTodosLosProductos: async () => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/productos`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener productos:', error);
-      throw error;
-    }
+    return await api.get('/api/inventario/productos');
   },
 
-  /**
-   * Obtener producto por ID
-   */
   obtenerProductoPorId: async (id) => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/productos/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener producto:', error);
-      throw error;
-    }
+    return await api.get(`/api/inventario/productos/${id}`);
   },
 
-  /**
-   * Crear nuevo producto
-   */
   crearProducto: async (producto) => {
-    try {
-      const response = await api.post(`${INVENTARIO_API}/productos`, producto);
-      return response.data;
-    } catch (error) {
-      console.error('Error al crear producto:', error);
-      throw error;
-    }
+    return await api.post('/api/inventario/productos', producto);
   },
 
-  /**
-   * Actualizar producto
-   */
   actualizarProducto: async (id, producto) => {
-    try {
-      const response = await api.put(`${INVENTARIO_API}/productos/${id}`, producto);
-      return response.data;
-    } catch (error) {
-      console.error('Error al actualizar producto:', error);
-      throw error;
-    }
+    return await api.put(`/api/inventario/productos/${id}`, producto);
   },
 
-  /**
-   * Eliminar producto
-   */
   eliminarProducto: async (id) => {
-    try {
-      const response = await api.delete(`${INVENTARIO_API}/productos/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al eliminar producto:', error);
-      throw error;
-    }
+    return await api.delete(`/api/inventario/productos/${id}`);
   },
 
-  /**
-   * Obtener productos por categoría
-   */
   obtenerProductosPorCategoria: async (categoria) => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/productos/categoria/${categoria}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener productos por categoría:', error);
-      throw error;
-    }
+    return await api.get(`/api/inventario/productos/categoria/${categoria}`);
   },
 
-  /**
-   * Obtener productos con stock bajo
-   */
   obtenerProductosStockBajo: async () => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/productos/stock-bajo`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener productos con stock bajo:', error);
-      throw error;
-    }
+    return await api.get('/api/inventario/productos/stock-bajo');
   },
 
-  /**
-   * Actualizar stock
-   */
+  obtenerProductosAgotados: async () => {
+    return await api.get('/api/inventario/productos/agotados');
+  },
+
   actualizarStock: async (id, cantidad) => {
-    try {
-      const response = await api.patch(`${INVENTARIO_API}/productos/${id}/stock`, { cantidad });
-      return response.data;
-    } catch (error) {
-      console.error('Error al actualizar stock:', error);
-      throw error;
-    }
+    return await api.patch(`/api/inventario/productos/${id}/stock`, { cantidad });
   },
 
-  /**
-   * Buscar productos
-   */
   buscarProductos: async (keyword) => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/productos/buscar`, {
-        params: { keyword }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error al buscar productos:', error);
-      throw error;
-    }
+    return await api.get('/api/inventario/productos/buscar', { params: { keyword } });
   },
 
-  // ============ MÁQUINAS ============
-  
-  /**
-   * Obtener todas las máquinas
-   */
+  obtenerTopProductos: async (limite = 10) => {
+    return await api.get('/api/inventario/productos/top', { params: { limite } });
+  },
+
+  // MÁQUINAS
   obtenerTodasLasMaquinas: async () => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/maquinas`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener máquinas:', error);
-      throw error;
-    }
+    return await api.get('/api/inventario/maquinas');
   },
 
-  /**
-   * Obtener máquina por ID
-   */
   obtenerMaquinaPorId: async (id) => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/maquinas/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener máquina:', error);
-      throw error;
-    }
+    return await api.get(`/api/inventario/maquinas/${id}`);
   },
 
-  /**
-   * Crear nueva máquina
-   */
   crearMaquina: async (maquina) => {
-    try {
-      const response = await api.post(`${INVENTARIO_API}/maquinas`, maquina);
-      return response.data;
-    } catch (error) {
-      console.error('Error al crear máquina:', error);
-      throw error;
-    }
+    return await api.post('/api/inventario/maquinas', maquina);
   },
 
-  /**
-   * Actualizar máquina
-   */
   actualizarMaquina: async (id, maquina) => {
-    try {
-      const response = await api.put(`${INVENTARIO_API}/maquinas/${id}`, maquina);
-      return response.data;
-    } catch (error) {
-      console.error('Error al actualizar máquina:', error);
-      throw error;
-    }
+    return await api.put(`/api/inventario/maquinas/${id}`, maquina);
   },
 
-  /**
-   * Eliminar máquina
-   */
   eliminarMaquina: async (id) => {
-    try {
-      const response = await api.delete(`${INVENTARIO_API}/maquinas/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al eliminar máquina:', error);
-      throw error;
-    }
+    return await api.delete(`/api/inventario/maquinas/${id}`);
   },
 
-  /**
-   * Obtener máquinas por zona
-   */
   obtenerMaquinasPorZona: async (zona) => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/maquinas/zona/${zona}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener máquinas por zona:', error);
-      throw error;
-    }
+    return await api.get(`/api/inventario/maquinas/zona/${zona}`);
   },
 
-  /**
-   * Obtener máquinas por estado
-   */
   obtenerMaquinasPorEstado: async (estado) => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/maquinas/estado/${estado}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener máquinas por estado:', error);
-      throw error;
-    }
+    return await api.get(`/api/inventario/maquinas/estado/${estado}`);
   },
 
-  /**
-   * Cambiar estado de máquina
-   */
   cambiarEstadoMaquina: async (id, nuevoEstado) => {
-    try {
-      const response = await api.patch(`${INVENTARIO_API}/maquinas/${id}/estado`, {
-        estado: nuevoEstado
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error al cambiar estado de máquina:', error);
-      throw error;
-    }
+    return await api.patch(`/api/inventario/maquinas/${id}/estado`, { estado: nuevoEstado });
   },
 
-  /**
-   * Registrar mantenimiento
-   */
   registrarMantenimiento: async (id, fecha) => {
-    try {
-      const response = await api.patch(`${INVENTARIO_API}/maquinas/${id}/mantenimiento`, {
-        fecha
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error al registrar mantenimiento:', error);
-      throw error;
-    }
+    return await api.patch(`/api/inventario/maquinas/${id}/mantenimiento`, { fecha });
   },
 
-  /**
-   * Buscar máquinas
-   */
   buscarMaquinas: async (keyword) => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/maquinas/buscar`, {
-        params: { keyword }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error al buscar máquinas:', error);
-      throw error;
-    }
+    return await api.get('/api/inventario/maquinas/buscar', { params: { keyword } });
   },
 
-  // ============ ESTADÍSTICAS ============
-  
-  /**
-   * Obtener estadísticas de inventario
-   */
+  obtenerMantenimientoProximo: async (dias = 30) => {
+    return await api.get('/api/inventario/maquinas/mantenimiento-proximo', { params: { dias } });
+  },
+
+  // ESTADÍSTICAS
   obtenerEstadisticas: async () => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/estadisticas`);
-      return response.data;
-    } catch (error) {
-      console.error('Error al obtener estadísticas:', error);
-      throw error;
-    }
+    return await api.get('/api/inventario/estadisticas');
   },
 
-  /**
-   * Health check
-   */
   healthCheck: async () => {
-    try {
-      const response = await api.get(`${INVENTARIO_API}/health`);
-      return response.data;
-    } catch (error) {
-      console.error('Error en health check:', error);
-      throw error;
-    }
+    return await api.get('/api/inventario/health');
   }
 };
-
-export default inventarioService;

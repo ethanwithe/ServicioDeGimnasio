@@ -37,7 +37,7 @@ export default function FundadorDashboard({ activeSection }) {
       setLoading(true);
       setError(null);
 
-      // Cargar datos de todos los servicios
+      // Cargar datos de todos los servicios con mejor manejo de errores
       const [
         estadisticasUsuarios,
         estadisticasRRHH,
@@ -45,12 +45,18 @@ export default function FundadorDashboard({ activeSection }) {
         estadisticasClientes,
         crecimientoData
       ] = await Promise.all([
-        usuarioService.obtenerEstadisticas().catch(() => ({ totalActivos: 0 })),
-        rrhhService.obtenerEstadisticas().catch(() => ({ totalPersonal: 0 })),
-        inventarioService.obtenerEstadisticas().catch(() => ({ totalMaquinas: 0, totalProductos: 0 })),
-        clienteService.obtenerEstadisticas().catch(() => ({ totalClientes: 0 })),
-        clienteService.obtenerCrecimientoMensual().catch(() => [])
+        usuarioService.obtenerEstadisticas().catch(() => ({ data: { totalActivos: 0 } })),
+        rrhhService.obtenerEstadisticas().catch(() => ({ data: { totalPersonal: 0 } })),
+        inventarioService.obtenerEstadisticas().catch(() => ({ data: { totalMaquinas: 0, totalProductos: 0 } })),
+        clienteService.obtenerEstadisticas().catch(() => ({ data: { totalClientes: 0 } })),
+        clienteService.obtenerCrecimientoMensual().catch(() => ({ data: [] }))
       ]);
+
+      // Debug logs
+      console.log('Estadísticas Usuarios:', estadisticasUsuarios);
+      console.log('Estadísticas RRHH:', estadisticasRRHH);
+      console.log('Estadísticas Inventario:', estadisticasInventario);
+      console.log('Estadísticas Clientes:', estadisticasClientes);
 
       // Preparar métricas generales
       const metrics = [
@@ -63,28 +69,28 @@ export default function FundadorDashboard({ activeSection }) {
         },
         { 
           nombre: 'Clientes Activos', 
-          valor: estadisticasClientes.totalClientes?.toString() || '0', 
+          valor: estadisticasClientes.data?.totalClientes?.toString() || '0', 
           cambio: '+156', 
           icono: Users, 
           color: 'from-blue-500 to-blue-600' 
         },
         { 
           nombre: 'Personal', 
-          valor: estadisticasRRHH.totalPersonal?.toString() || '0', 
+          valor: estadisticasRRHH.data?.totalPersonal?.toString() || '0', 
           cambio: '+3', 
           icono: UserCircle, 
           color: 'from-purple-500 to-purple-600' 
         },
         { 
           nombre: 'Máquinas', 
-          valor: estadisticasInventario.totalMaquinas?.toString() || '0', 
+          valor: estadisticasInventario.data?.totalMaquinas?.toString() || '0', 
           cambio: '+5', 
           icono: Dumbbell, 
           color: 'from-orange-500 to-orange-600' 
         },
         { 
           nombre: 'Productos', 
-          valor: estadisticasInventario.totalProductos?.toString() || '0', 
+          valor: estadisticasInventario.data?.totalProductos?.toString() || '0', 
           cambio: '+8', 
           icono: Package, 
           color: 'from-pink-500 to-pink-600' 
@@ -126,8 +132,9 @@ export default function FundadorDashboard({ activeSection }) {
       setDistribucionIngresos(distribucion);
 
       // Preparar datos de crecimiento de clientes
-      const crecimiento = crecimientoData.length > 0 
-        ? crecimientoData.map(item => ({
+      const crecimientoArray = Array.isArray(crecimientoData.data) ? crecimientoData.data : [];
+      const crecimiento = crecimientoArray.length > 0 
+        ? crecimientoArray.map(item => ({
             mes: item.mes,
             clientes: item.nuevos || 0
           }))
