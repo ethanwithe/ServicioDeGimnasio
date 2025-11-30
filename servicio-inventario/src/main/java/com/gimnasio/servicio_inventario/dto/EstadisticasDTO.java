@@ -1,11 +1,12 @@
 package com.gimnasio.servicio_inventario.dto;
 
+import java.math.BigDecimal;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class EstadisticasDTO {
     private BigDecimal valorTotal;
     private BigDecimal ventasMes;
     private Map<String, Long> productosPorCategoria;
-    
+
     // Estadísticas de máquinas
     private Long totalMaquinas;
     private Long maquinasOperativas;

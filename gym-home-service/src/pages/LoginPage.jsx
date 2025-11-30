@@ -1,120 +1,185 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button.jsx';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx';
-import { Input } from '@/components/ui/input.jsx';
-import { Label } from '@/components/ui/label.jsx';
-import { Dumbbell } from 'lucide-react';
-import gymHero from '../assets/gym-hero.jpg';
+import React, { useState } from 'react';
+import { Dumbbell, Loader2, AlertCircle } from 'lucide-react';
 
 export default function LoginPage({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    // Credenciales de ejemplo para demostración
-    const users = {
-      'admin': { password: 'admin123', role: 'administrador' },
-      'gerente': { password: 'gerente&123', role: 'gerente' },
-      'cliente': { password: 'cliente123', role: 'cliente' },
-      'juanperez': { password: 'fundador123', role: 'fundador' }
-    };
-
-    if (users[username] && users[username].password === password) {
-      onLogin({
-        username,
-        role: users[username].role,
-        name: username === 'juanperez' ? 'Juan Pérez' : username.charAt(0).toUpperCase() + username.slice(1)
+    try {
+      const response = await fetch('http://localhost:8080/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
       });
-    } else {
-      setError('Usuario o contraseña incorrectos');
+
+      const data = await response.json();
+
+      if (response.ok && data.success && data.usuario) {
+        localStorage.setItem('user', JSON.stringify(data.usuario));
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+
+        onLogin({
+          ...data.usuario,
+          name: data.usuario.nombre || data.usuario.username
+        });
+      } else {
+        setError(data.message || 'Credenciales incorrectas');
+      }
+    } catch (err) {
+      console.error('Error en login:', err);
+      setError('Error al conectar con el servidor. Verifica que el backend esté corriendo en puerto 8080.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex">
       {/* Lado izquierdo - Imagen */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <img 
-          src={gymHero} 
-          alt="Gimnasio Juan Pérez" 
-          className="object-cover w-full h-full"
-        />
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-cover bg-center"
+             style={{backgroundImage: "url('src/assets/hero.png')"}}>
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 flex items-center justify-center">
           <div className="text-white text-center px-8">
-            <Dumbbell className="w-20 h-20 mx-auto mb-4" />
+            <img
+            src="src/assets/logo.png"
+            alt="Gimnasio Juan Pérez"
+            className="w-28 h-28 mx-auto mb-6 object-contain drop-shadow-xl animate-pulse"
+            />
             <h1 className="text-5xl font-bold mb-4">Gimnasio Juan Pérez</h1>
             <p className="text-xl text-gray-200">Sistema de Gestión Integral</p>
             <p className="text-sm text-gray-300 mt-2">Fundado por Juan Pérez</p>
+            
+            <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                <div className="text-2xl font-bold">1,200+</div>
+                <div className="text-xs text-gray-300">Clientes</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                <div className="text-2xl font-bold">10+</div>
+                <div className="text-xs text-gray-300">Años</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                <div className="text-2xl font-bold">25+</div>
+                <div className="text-xs text-gray-300">Personal</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Lado derecho - Formulario de login */}
+      {/* Lado derecho - Formulario */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
-        <Card className="w-full max-w-md shadow-2xl">
-          <CardHeader className="space-y-1 text-center">
-            <div className="flex justify-center mb-4 lg:hidden">
-              <Dumbbell className="w-12 h-12 text-primary" />
+        <div className="w-full max-w-md">
+          <div className="bg-white shadow-2xl rounded-2xl overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white text-center">
+              <div className="flex justify-center mb-3 lg:hidden">
+                <Dumbbell className="w-12 h-12" />
+              </div>
+              <h2 className="text-3xl font-bold">Iniciar Sesión</h2>
+              <p className="text-sm text-blue-100 mt-1">
+                Ingrese sus credenciales para acceder
+              </p>
             </div>
-            <CardTitle className="text-3xl font-bold">Iniciar Sesión</CardTitle>
-            <CardDescription className="text-base">
-              Ingrese sus credenciales para acceder al sistema
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Usuario</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Ingrese su usuario"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  className="h-11"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Ingrese su contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="h-11"
-                />
-              </div>
-              {error && (
-                <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md border border-red-200">
-                  {error}
-                </div>
-              )}
-              <Button type="submit" className="w-full h-11 text-base font-semibold">
-                Ingresar
-              </Button>
-            </form>
 
-            {/* Credenciales de demostración */}
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-xs font-semibold text-blue-900 mb-2">Credenciales de demostración:</p>
-              <div className="text-xs text-blue-800 space-y-1">
-                <p><strong>Fundador:</strong> juanperez / fundador123</p>
-                <p><strong>Gerente:</strong> gerente / gerente&123</p>
-                <p><strong>Admin:</strong> admin / admin123</p>
-                <p><strong>Cliente:</strong> cliente / cliente123</p>
+            {/* Formulario */}
+            <div className="p-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                    Usuario
+                  </label>
+                  <input
+                    id="username"
+                    type="text"
+                    placeholder="Ingrese su usuario"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={loading}
+                    className="w-full h-11 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Contraseña
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    placeholder="Ingrese su contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    className="w-full h-11 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2 text-red-800">
+                    <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm">{error}</div>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Iniciando sesión...
+                    </>
+                  ) : (
+                    'Ingresar'
+                  )}
+                </button>
+              </div>
+
+              {/* Info importante */}
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  Información importante:
+                </p>
+                <div className="text-xs text-blue-800 space-y-1">
+                  <p>• Usa las credenciales de la base de datos</p>
+                  <p>• Verifica que el backend esté corriendo en puerto 8080</p>
+                  <p>• Los roles disponibles: fundador, gerente, administrador, cliente</p>
+                </div>
+              </div>
+
+              {/* Estado del servidor */}
+              <div className="mt-4 text-center">
+                <div className="inline-flex items-center gap-2 text-xs text-gray-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  Conectando a http://localhost:8080
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Footer info */}
+          <div className="mt-6 text-center text-xs text-gray-600">
+            <p>Sistema de Gestión Integral v2.0</p>
+            <p className="mt-1">© 2025 Gimnasio Juan Pérez</p>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-

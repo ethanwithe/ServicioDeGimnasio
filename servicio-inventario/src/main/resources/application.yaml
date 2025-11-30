@@ -16,11 +16,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-        
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:inventario.sql
       
 server:
   port: 8083

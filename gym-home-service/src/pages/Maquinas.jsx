@@ -35,9 +35,9 @@ export default function Maquinas() {
         inventarioService.obtenerEstadisticas()
       ]);
 
-      setMaquinas(maquinasData);
-      setMaquinasFiltradas(maquinasData);
-setEstadisticas(estadisticasData);
+      setMaquinas(maquinasData.data || []);
+      setMaquinasFiltradas(maquinasData.data || []);
+setEstadisticas(estadisticasData.data || []);
 } catch (err) {
 console.error('Error al cargar datos:', err);
 setError('No se pudieron cargar las máquinas. Verifique la conexión con el servidor.');

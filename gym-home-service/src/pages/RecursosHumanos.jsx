@@ -32,9 +32,9 @@ export default function RecursosHumanos() {
         rrhhService.obtenerContratacionesRecientes(3)
       ]);
 
-      setPersonal(personalData);
-      setEstadisticas(estadisticasData);
-      setContratacionesRecientes(recientesData);
+      setPersonal(personalData.data || []);
+      setEstadisticas(estadisticasData.data || []);
+      setContratacionesRecientes(recientesData.data || []);
     } catch (err) {
       console.error('Error al cargar datos:', err);
       setError('No se pudieron cargar los datos. Por favor, intente nuevamente.');

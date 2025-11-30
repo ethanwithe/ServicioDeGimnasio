@@ -1,13 +1,15 @@
 package com.gimnasio.servicio_inventario.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+
 import com.gimnasio.servicio_inventario.model.Maquina;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
 
 @Data
 @NoArgsConstructor
@@ -29,7 +31,7 @@ public class MaquinaDTO {
     private LocalDateTime fechaRegistro;
     private Integer antiguedad; // En años
     private Integer diasProximoMantenimiento;
-    
+
     public static MaquinaDTO fromEntity(Maquina maquina) {
         MaquinaDTO dto = MaquinaDTO.builder()
             .id(maquina.getId())
@@ -46,19 +48,19 @@ public class MaquinaDTO {
             .horasUso(maquina.getHorasUso())
             .fechaRegistro(maquina.getFechaRegistro())
             .build();
-        
+
         // Calcular antigüedad
         if (maquina.getFechaAdquisicion() != null) {
             Period period = Period.between(maquina.getFechaAdquisicion(), LocalDate.now());
             dto.setAntiguedad(period.getYears());
         }
-        
+
         // Calcular días para próximo mantenimiento
         if (maquina.getProximoMantenimiento() != null) {
             Period period = Period.between(LocalDate.now(), maquina.getProximoMantenimiento());
             dto.setDiasProximoMantenimiento(period.getDays());
         }
-        
+
         return dto;
     }
 }

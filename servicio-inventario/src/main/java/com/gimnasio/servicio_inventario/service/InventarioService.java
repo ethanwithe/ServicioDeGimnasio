@@ -1,16 +1,16 @@
 package com.gimnasio.servicio_inventario.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.gimnasio.servicio_inventario.dto.EstadisticasDTO;
 import com.gimnasio.servicio_inventario.dto.MaquinaDTO;
 import com.gimnasio.servicio_inventario.dto.ProductoDTO;
 import com.gimnasio.servicio_inventario.model.Maquina;
 import com.gimnasio.servicio_inventario.model.Producto;
 
-import java.time.LocalDate;
-import java.util.List;
-
 public interface InventarioService {
-    
+
     // ============ PRODUCTOS ============
     ProductoDTO crearProducto(Producto producto);
     ProductoDTO obtenerProductoPorId(Long id);
@@ -23,7 +23,7 @@ public interface InventarioService {
     ProductoDTO actualizarStock(Long id, Integer cantidad);
     List<ProductoDTO> buscarProductos(String keyword);
     List<ProductoDTO> obtenerTopProductos(int limite);
-    
+
     // ============ MÁQUINAS ============
     MaquinaDTO crearMaquina(Maquina maquina);
     MaquinaDTO obtenerMaquinaPorId(Long id);
@@ -36,7 +36,7 @@ public interface InventarioService {
     void registrarMantenimiento(Long id, LocalDate fecha);
     List<MaquinaDTO> buscarMaquinas(String keyword);
     List<MaquinaDTO> obtenerMantenimientoProximo(int dias);
-    
+
     // ============ ESTADÍSTICAS ============
     EstadisticasDTO obtenerEstadisticas();
 }

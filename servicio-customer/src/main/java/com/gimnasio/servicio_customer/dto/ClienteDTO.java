@@ -1,13 +1,15 @@
 package com.gimnasio.servicio_customer.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+
 import com.gimnasio.servicio_customer.model.Cliente;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +36,7 @@ public class ClienteDTO {
     private Integer edad;
     private Integer diasRestantes;
     private Integer mesesMembresia;
-    
+
     public static ClienteDTO fromEntity(Cliente cliente) {
         ClienteDTO dto = ClienteDTO.builder()
             .id(cliente.getId())
@@ -55,25 +57,25 @@ public class ClienteDTO {
             .telefonoEmergencia(cliente.getTelefonoEmergencia())
             .fechaRegistro(cliente.getFechaRegistro())
             .build();
-        
+
         // Calcular edad
         if (cliente.getFechaNacimiento() != null) {
             Period period = Period.between(cliente.getFechaNacimiento(), LocalDate.now());
             dto.setEdad(period.getYears());
         }
-        
+
         // Calcular días restantes
         if (cliente.getFechaVencimiento() != null) {
             Period period = Period.between(LocalDate.now(), cliente.getFechaVencimiento());
             dto.setDiasRestantes(period.getDays() + (period.getMonths() * 30) + (period.getYears() * 365));
         }
-        
+
         // Calcular meses de membresía
         if (cliente.getFechaInicio() != null && cliente.getFechaVencimiento() != null) {
             Period period = Period.between(cliente.getFechaInicio(), cliente.getFechaVencimiento());
             dto.setMesesMembresia(period.getMonths() + (period.getYears() * 12));
         }
-        
+
         return dto;
     }
 }

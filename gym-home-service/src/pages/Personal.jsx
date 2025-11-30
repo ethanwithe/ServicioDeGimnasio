@@ -35,9 +35,9 @@ export default function Personal() {
         rrhhService.obtenerEstadisticas()
       ]);
 
-      setPersonal(personalData);
-      setPersonalFiltrado(personalData);
-      setEstadisticas(estadisticasData);
+      setPersonal(personalData.data || []);
+      setPersonalFiltrado(personalData.data || []);
+      setEstadisticas(estadisticasData.data || []);
     } catch (err) {
       console.error('Error al cargar datos:', err);
       setError('No se pudieron cargar los datos del personal.');

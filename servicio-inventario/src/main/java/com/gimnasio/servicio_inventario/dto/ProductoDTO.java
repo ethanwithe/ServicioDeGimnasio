@@ -1,12 +1,14 @@
 package com.gimnasio.servicio_inventario.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import com.gimnasio.servicio_inventario.model.Producto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -27,7 +29,7 @@ public class ProductoDTO {
     private String codigoBarras;
     private LocalDateTime fechaRegistro;
     private BigDecimal valorTotal; // precio * stock
-    
+
     public static ProductoDTO fromEntity(Producto producto) {
         ProductoDTO dto = ProductoDTO.builder()
             .id(producto.getId())
@@ -44,12 +46,12 @@ public class ProductoDTO {
             .codigoBarras(producto.getCodigoBarras())
             .fechaRegistro(producto.getFechaRegistro())
             .build();
-        
+
         // Calcular valor total
         if (producto.getPrecio() != null && producto.getStock() != null) {
             dto.setValorTotal(producto.getPrecio().multiply(BigDecimal.valueOf(producto.getStock())));
         }
-        
+
         return dto;
     }
 }

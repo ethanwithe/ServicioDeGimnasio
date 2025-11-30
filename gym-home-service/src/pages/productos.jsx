@@ -34,9 +34,9 @@ export default function Productos() {
         inventarioService.obtenerEstadisticas()
       ]);
 
-      setProductos(productosData);
-      setProductosFiltrados(productosData);
-      setEstadisticas(estadisticasData);
+      setProductos(productosData.data || []);
+      setProductosFiltrados(productosData.data || []);
+      setEstadisticas(estadisticasData.data || []);
     } catch (err) {
       console.error('Error al cargar datos:', err);
       setError('No se pudieron cargar los productos. Verifique la conexión con el servidor.');
